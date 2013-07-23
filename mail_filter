@@ -246,26 +246,26 @@ $filter->run;
 
 # This subroutine updates our map of known aliases
 sub update_aliases {
-    my $alias_lines = $filter->cloak_and_dagger('alias', $mail_prompt, 0.25);
+    my $alias_lines = $filter->cloak_and_dagger('alias', $mail_prompt, 2.0);
     %current_aliases = map { split(/\s+/, $_, 2) }(split /\r?\n/, $alias_lines);
 }
 
 # This subroutine updates our list of known commands
 sub update_commands {
-    my $help_text = $filter->cloak_and_dagger('list', $mail_prompt, 0.25);
+    my $help_text = $filter->cloak_and_dagger('list', $mail_prompt, 2.0);
     $help_text =~ s/^Commands are://g;
     @mail_commands = grep !/\r?\n/, split /(\,\s?|\r?\n)/, $help_text;
 }
 
 # This subroutine updates our list of known folders
 sub update_folders {
-    my $folder_lines = $filter->cloak_and_dagger('folders', $mail_prompt, 0.25);
+    my $folder_lines = $filter->cloak_and_dagger('folders', $mail_prompt, 2.0);
     @current_folders = map { split }(split /\r?\n/, $folder_lines);
 }
 
 # This subroutine updates our map of current settings
 sub update_settings {
-    my $settings_lines = $filter->cloak_and_dagger('set', $mail_prompt, 0.01);
+    my $settings_lines = $filter->cloak_and_dagger('set', $mail_prompt, 2.0);
     if ($settings_lines =~ m/bsd(compat|set)/) {
         %current_settings = map { split(/\s+/, $_, 2) }(split
             /\r?\n/, $settings_lines);
