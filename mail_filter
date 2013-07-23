@@ -310,7 +310,7 @@ sub folders {
     if (defined $current_settings{'folder'}
              && $current_settings{'folder'} =~ m/^.+$/) {
         update_folders();
-        my @candidates = grep /^[\@+]?$prefix/, @current_folders;
+        my @candidates = grep /^[\+\@]?$prefix/, @current_folders;
         return completion_helper($prefix, @candidates)
     } else {
         #$filter->send_output_oob("\nError: folder not set\n");
