@@ -284,13 +284,13 @@ sub update_settings {
 # Deals with hyphens and spaces in completions
 sub completion_helper {
     my ($prefix, @candidates) = @_;
-    if ($prefix =~ m/.*[-\.].*/) {
+    if ($prefix =~ m/.*[\+\@\-\.].*/) {
         # If we have a period or a hyphen in candidates, we must make it play
         # nice with rlwrap by only returning what follows the hyphen/period
         # The number of occurences of - or . in $prefix :
         my $count = 0;
-        while ($prefix =~ /[-\.]/g) { $count++ };
-        @candidates = map { s/^(?:[^-\.]+[-\.]){$count}//; $_ } @candidates;
+        while ($prefix =~ /[\+\@\-\.]/g) { $count++ };
+        @candidates = map { s/^(?:[^\+\@\-\.]+[\+\@\-\.]){$count}//; $_ } @candidates;
     }
     return @candidates;
 }
@@ -355,7 +355,7 @@ sub complete {
     my($line, $prefix, @completions) = @_;
 
     # Split the line into words
-    my @words = ($line =~ /(\w+(?:[-\.']+\w*)*)/g);
+    my @words = ($line =~ /(\w+(?:[\+\@\-\.']+\w*)*)/g);
     my $wordc = scalar @words;
     # We're completing a new (empty) argument unless we have a $prefix
     $wordc++ unless $prefix;
