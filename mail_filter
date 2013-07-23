@@ -52,8 +52,9 @@ my %completion_types = (
 	,	m	=> ['alias'],
 	,	mail	=> ['alias'],
 	# We try to complete a setting name
-	,	se	=> ['settings'],
-	,	set	=> ['settings']
+	,	se	=> ['settings_s'],
+	,	set	=> ['settings_s']
+	,	unset	=> ['settings_u']
 );
 
 my $at_first_prompt = 1;
@@ -318,9 +319,15 @@ sub folders {
 
 # Returns completions for a settingstarting with $prefix
 sub settings {
-    my ($prefix) = @_;
-    my @candidates = grep /^$prefix/, keys %mail_settings_nt;
-    @candidates = map { $mail_settings_nt{$_} eq 'string' ? $_ . '=' : $_ } @candidates;
+    my ($prefix, $set) = @_;
+    my @candidates = ();
+    if ($set) {
+        @candidates = grep /^$prefix/, keys %mail_settings_nt;
+        @candidates = map { $mail_settings_nt{$_} eq 'string' ?
+                            $_ . '=' : $_ } @candidates;
+    } else {
+        @candidates = grep /^$prefix/, keys %current_settings;
+    }
     return completion_helper(@candidates);
 }
 
@@ -390,8 +397,10 @@ sub complete {
         # that word instead of $words[-1].
         if ($comptype eq 'folders') {
             push @completions, folders($words[-1]);
-        } elsif ($comptype eq 'settings') {
-            push @completions, settings($words[-1]);
+        } elsif ($comptype eq 'settings_s') {
+            push @completions, settings($words[-1], 1);
+        } elsif ($comptype eq 'settings_u') {
+            push @completions, settings($words[-1], 0);
         } elsif ($comptype eq 'alias') {
             push @completions, aliases($words[-1]);
         }
