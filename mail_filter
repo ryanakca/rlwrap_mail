@@ -51,6 +51,7 @@ my %completion_types = (
 	# We always try to complete an alias
 	,	m	=> ['alias'],
 	,	mail	=> ['alias'],
+	,	alias	=> ['alias'],
 	# We try to complete a setting name
 	,	se	=> ['settings_s'],
 	,	set	=> ['settings_s']
