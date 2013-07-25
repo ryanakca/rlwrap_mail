@@ -31,6 +31,24 @@ use lib $ENV{RLWRAP_FILTERDIR};
 use lib '/usr/share/rlwrap/filters';
 
 use RlwrapFilter;
+use Term::ANSIColor qw(:constants);
+
+############
+# SETTINGS #
+############
+
+# Colourise the the header list?
+# See http://perldoc.perl.org/Term/ANSIColor.html for colours.
+# Use RESET to disable a particular colouring
+my $colour = 1;
+
+my %colours = (
+		new	=> (BOLD GREEN)
+	,	unread	=> (CYAN)
+	,	flagged	=> (BOLD YELLOW)
+	,	sig	=> (MAGENTA)
+	,	thread	=> (BLUE)
+);
 
 # Enable debug output
 my $debug = 0;
@@ -59,6 +77,13 @@ my %completion_types = (
 	,	se	=> ['settings_s'],
 	,	set	=> ['settings_s']
 	,	unset	=> ['settings_u']
+);
+
+my %current_location = (
+		unread	=> 0
+	,	flagged	=> 0
+	,	new	=> 0
+	,	sig	=> 0
 );
 
 my $at_first_prompt = 1;
@@ -242,6 +267,9 @@ my $filter = new RlwrapFilter;
 
 $filter->prompt_handler(\&prompt);
 $filter->completion_handler(\&complete);
+if ($colour) {
+    $filter->output_handler(\&output);
+}
 $filter->cloak_and_dagger_verbose($debug);
 $filter->run;
 
@@ -410,4 +438,39 @@ sub complete {
         }
     }
     return @completions;
+}
+
+sub output {
+    my ($out) = @_;
+    my @lines = split /\r?\n/ , $out;
+    $filter->send_output_oob(Dumper(\%colours)) if $debug;
+    my $curr_colour = RESET;
+    foreach my $line (@lines) {
+        if ($line =~ /^[> ][^\+UNF]  ?[0-9]+/ || $line =~ /^$mail_prompt$/ ||
+            $line =~ m/^New mail has arrived.$/) {
+            for my $key (keys %current_location) {
+                    $current_location{$key} = 0;
+            }
+                $curr_colour = RESET;
+        } elsif ($line =~ /^[> ]U  ?[0-9]+/ || $current_location{'unread'}) {
+            $line = $colours{'unread'} . $line . RESET;
+            $current_location{'unread'} = 1;
+                $curr_colour = $colours{'unread'};
+        } elsif ($line =~ /^[> ]F  ?[0-9]+/ || $current_location{'flagged'}) {
+            $line = $colours{'flagged'} . $line . RESET;
+            $current_location{'flagged'} = 1;
+                $curr_colour = $colours{'flagged'};
+        } elsif ($line =~ /^[> ]N  ?[0-9]+/ || $current_location{'new'}) {
+            $line = $colours{'new'} . $line . RESET;
+            $current_location{'new'} = 1;
+                $curr_colour = $colours{'new'};
+        } elsif ($line =~ /^\-\- $/ || $current_location{'sig'}) {
+            $line = $colours{'sig'} . $line . RESET
+            $current_location{'sig'} = 1;
+                $curr_colour = $colours{'sig'};
+        }
+        my $coloured_th = RESET . $colours{'thread'} . '└' . $curr_colour;
+        $line =~ s/└/$coloured_th/g;
+    }
+    return join("\n", @lines);
 }
