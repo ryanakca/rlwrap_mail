@@ -34,6 +34,9 @@ use RlwrapFilter;
 
 # Enable debug output
 my $debug = 0;
+if ($debug) {
+    use Data::Dumper;
+}
 
 # What various commands complete
 # Format: a => ['arg_1', ...., 'arg_n']
