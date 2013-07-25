@@ -29,6 +29,7 @@ use warnings;
 
 use lib $ENV{RLWRAP_FILTERDIR};
 use lib '/usr/share/rlwrap/filters';
+use lib '/usr/local/share/rlwrap/filters';
 
 use RlwrapFilter;
 use Term::ANSIColor qw(:constants);
