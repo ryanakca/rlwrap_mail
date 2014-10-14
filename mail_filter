@@ -447,21 +447,21 @@ sub output {
     $filter->send_output_oob(Dumper(\%colours)) if $debug;
     my $curr_colour = RESET;
     foreach my $line (@lines) {
-        if ($line =~ /^[> ][^\+UNF]  ?[0-9]+/ || $line =~ /^$mail_prompt$/ ||
+        if ($line =~ /^[> ][^\+UNF] {0,2}[0-9]+/ || $line =~ /^$mail_prompt$/ ||
             $line =~ m/^New mail has arrived.$/) {
             for my $key (keys %current_location) {
                     $current_location{$key} = 0;
             }
                 $curr_colour = RESET;
-        } elsif ($line =~ /^[> ]U  ?[0-9]+/ || $current_location{'unread'}) {
+        } elsif ($line =~ /^[> ]U {0,2}[0-9]+/ || $current_location{'unread'}) {
             $line = $colours{'unread'} . $line . RESET;
             $current_location{'unread'} = 1;
                 $curr_colour = $colours{'unread'};
-        } elsif ($line =~ /^[> ]F  ?[0-9]+/ || $current_location{'flagged'}) {
+        } elsif ($line =~ /^[> ]F {0,2}[0-9]+/ || $current_location{'flagged'}) {
             $line = $colours{'flagged'} . $line . RESET;
             $current_location{'flagged'} = 1;
                 $curr_colour = $colours{'flagged'};
-        } elsif ($line =~ /^[> ]N  ?[0-9]+/ || $current_location{'new'}) {
+        } elsif ($line =~ /^[> ]N {0,2}[0-9]+/ || $current_location{'new'}) {
             $line = $colours{'new'} . $line . RESET;
             $current_location{'new'} = 1;
                 $curr_colour = $colours{'new'};
